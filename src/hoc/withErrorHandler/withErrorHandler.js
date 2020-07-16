@@ -8,13 +8,18 @@ const withErrorHandler = (WrappedComponent, axios) => {
         }
         // in latest versions componetWillMount not support anymore instead we use constructor
         componentWillMount() {
-            axios.interceptors.request.use(req =>{
+            this.requestInterceptors = axios.interceptors.request.use(req =>{
                 this.setState({error : null});
                 return req;
             })
-            axios.interceptors.response.use(res => res, error =>{
+            this.responseInterceptors = axios.interceptors.response.use(res => res, error =>{
                 this.setState({error : error});
             })
+        }
+        componentWillUnmount (){
+            console.log('Component will unmount' , this.requestInterceptors ,  this.responseInterceptors)
+            axios.interceptors.request.eject(this.requestInterceptors);
+            axios.interceptors.response.eject(this.responseInterceptors);
         }
         errorConfirmedHandler = () =>{
             this.setState({error : null});
